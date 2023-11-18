@@ -3,7 +3,7 @@
 	FACULTAD DE ESTUDIOS SUPERIORES -ARAGON-
 
 	Computadoras y programacion. 
-	(c) Ponga su nombre y numero de cuenta aqui.
+	(c) Marco Antonio Martinez Santiago 321044862
 	
 	Quiso decir: Programa principal de la aplicacion de la distancia de Levenstein.
 	
@@ -13,6 +13,8 @@
 #include "stdafx.h"
 #include <string.h>
 #include "corrector.h"
+#define DEPURAR 1
+
 //Funciones publicas del proyecto
 /*****************************************************************************************************************
 	DICCIONARIO: Esta funcion crea el diccionario completo
@@ -23,11 +25,68 @@
 ******************************************************************************************************************/
 void	Diccionario			(char *szNombre, char szPalabras[][TAMTOKEN], int iEstadisticas[], int &iNumElementos)
 {
+	FILE* fpDicc;
+	char linea[4000];
+	char palabraDetectada[TAMTOKEN];
+	int i;
+	int indicePD;
+	iNumElementos = 0;
+	// abrir el achivo
+	if (DEPURAR == 1)
+		printf("%s", szNombre);
 
-	//Sustituya estas lineas por su código
-	iNumElementos=1;
-	strcpy(szPalabras[0],"AquiVaElDiccionario");
-	iEstadisticas[0] = 1; // la primer palabra aparece solo una vez.
+	fopen_s(&fpDicc, szNombre, "r");
+	if (fpDicc != NULL)
+	{
+
+		if (DEPURAR == 1)
+			printf("\nSi lo pude abrir");
+
+		indicePD = 0;
+		while (!feof(fpDicc))
+		{
+			fgets(linea, sizeof(linea), fpDicc);
+			if (DEPURAR == 1)
+				printf("\n%s\n", linea);
+			for (i = 0; i < strlen(linea); i++)
+			{
+
+				// Detectar una palabra
+				if (linea[i] == ' ')
+				{
+					palabraDetectada[indicePD] = '\0';
+					strcpy_s(szPalabras[iNumElementos], TAMTOKEN, palabraDetectada);
+					iEstadisticas[iNumElementos] = 1;
+					if (DEPURAR == 1)
+						//printf("\np: %s", palabraDetectada);
+						indicePD = 0;
+					iNumElementos++;
+					// eliminar los espacios en blanco
+					// tabuladores y saltos de linea consecutivos				
+				}
+				else
+				{
+					if (linea[i] != '(' && linea[i] != ')')
+					{
+						palabraDetectada[indicePD] = linea[i];
+						indicePD++;
+					}
+				}
+			}
+			if (DEPURAR == 1)
+				printf("\nNumPalabras: %i\n", iNumElementos);
+
+			// burbujazo
+
+		}
+
+		fclose(fpDicc);
+	}
+	else
+	{
+		if (DEPURAR == 1)
+			printf("\nNo lo pude abrir");
+	}
 }
 
 /*****************************************************************************************************************
