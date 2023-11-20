@@ -23,14 +23,16 @@
 	int		iEstadisticas[]			:	Arreglo con el numero de veces que aparecen las palabras en el diccionario
 	int &	iNumElementos			:	Numero de elementos en el diccionario
 ******************************************************************************************************************/
-void	Diccionario			(char *szNombre, char szPalabras[][TAMTOKEN], int iEstadisticas[], int &iNumElementos)
+void	Diccionario(char* szNombre, char szPalabras[][TAMTOKEN], int iEstadisticas[], int& iNumElementos)
 {
 	FILE* fpDicc;
 	char linea[4000];
 	char palabraDetectada[TAMTOKEN];
-	int i;
+	int i, j;
 	int indicePD;
 	iNumElementos = 0;
+	char auxiliar[TAMTOKEN];
+
 	// abrir el achivo
 	if (DEPURAR == 1)
 		printf("%s", szNombre);
@@ -52,31 +54,40 @@ void	Diccionario			(char *szNombre, char szPalabras[][TAMTOKEN], int iEstadistic
 			{
 
 				// Detectar una palabra
-				if (linea[i] == ' ')
+				if (linea[i] == ' ' && linea[i + 1] != ' ')
 				{
 					palabraDetectada[indicePD] = '\0';
+					_strlwr_s(palabraDetectada, TAMTOKEN);
 					strcpy_s(szPalabras[iNumElementos], TAMTOKEN, palabraDetectada);
 					iEstadisticas[iNumElementos] = 1;
 					if (DEPURAR == 1)
-						//printf("\np: %s", palabraDetectada);
 						indicePD = 0;
 					iNumElementos++;
 					// eliminar los espacios en blanco
 					// tabuladores y saltos de linea consecutivos				
 				}
-				else
-				{
-					if (linea[i] != '(' && linea[i] != ')')
+					else
 					{
-						palabraDetectada[indicePD] = linea[i];
-						indicePD++;
+						if (linea[i] != '(' && linea[i] != ')' && linea[i] != ',' && linea[i] != ';' && linea[i] != '.' && linea[i] != '\t' && linea[i] != '\n')
+						{
+							palabraDetectada[indicePD] = linea[i];
+							indicePD++;
+						}
 					}
-				}
 			}
 			if (DEPURAR == 1)
 				printf("\nNumPalabras: %i\n", iNumElementos);
 
 			// burbujazo
+			for (i = 0; i < iNumElementos; i++) {
+				for (j = 0; j < iNumElementos; j++) {
+					if (strcmp(szPalabras[j], szPalabras[j + 1]) > 0) {
+						strcpy_s(auxiliar, TAMTOKEN, szPalabras[j]);
+						strcpy_s(szPalabras[j], TAMTOKEN, szPalabras[j + 1]);
+						strcpy_s(szPalabras[j + 1], TAMTOKEN, auxiliar);
+					}
+				}
+			}
 
 		}
 
