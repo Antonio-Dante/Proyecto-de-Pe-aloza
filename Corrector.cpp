@@ -168,13 +168,13 @@ void	ListaCandidatas(
     int &	iNumSugeridas)						//Numero de elementos en la lista
 ******************************************************************************************************************/
 void	ClonaPalabras(
-    char* szPalabraLeida,						// Palabra a clonar
-    char	szPalabrasSugeridas[][TAMTOKEN], 	//Lista de palabras clonadas
-    int& iNumSugeridas)						//Numero de elementos en la lista
+        char* szPalabraLeida,						// Palabra a clonar
+        char	szPalabrasSugeridas[][TAMTOKEN], 	//Lista de palabras clonadas
+        int& iNumSugeridas)						//Numero de elementos en la lista
 {
     char alfabeto[] = "abcdefghijklmnopqrstuvwxyzáéíóú";
     int longitud = strlen(szPalabraLeida);
-    int i, j;
+    int i, j, k;
     iNumSugeridas = 0;
     char palabraModificada[TAMTOKEN]; // Para almacenar la palabra modificada
 
@@ -209,28 +209,31 @@ void	ClonaPalabras(
         iNumSugeridas++;
     }
 
-    // Sustituir cada carácter de la cadena original por TODO el alfabeto
+    strcpy_s(palabraModificada, TAMTOKEN, szPalabraLeida);
+    //sustituir el alfabeto en cada caracter
     for (i = 0; i < longitud; i++) {
-        for (j = 0; j <= strlen(alfabeto); j++) {
-            szPalabraLeida[i] = alfabeto[j];
+        strcpy_s(palabraModificada, TAMTOKEN, szPalabraLeida);
+        for (j = 0; j < strlen(alfabeto); j++) {
+            palabraModificada[i] = alfabeto[j];
+            strcpy_s(szPalabrasSugeridas[iNumSugeridas], TAMTOKEN, palabraModificada);
+            iNumSugeridas++;
+        }
 
-            // Almacenar la palabra modificada en szPalabrasSugeridas
-            strcpy(szPalabrasSugeridas[iNumSugeridas], szPalabraLeida);
+    }
+    
+    strcpy_s(palabraModificada, TAMTOKEN, szPalabraLeida);
+    // Insertar el alfabeto completo en cada uno de los espacios
+    for (i = 0; i < longitud; i++) {
+        k = 0;
+        for (j = 0; j < strlen(alfabeto); j++) {
+            palabraModificada[i] = alfabeto[j];
+            
+            while (szPalabraLeida[i] != '\0' && k < longitud) {
+                palabraModificada[i + 1] = szPalabraLeida[i];
+            }
+            strcpy_s(szPalabrasSugeridas[iNumSugeridas], TAMTOKEN, palabraModificada);
             iNumSugeridas++;
         }
     }
 
-    //// Insertar el alfabeto completo en cada uno de los espacios
-    //for (i = 0; i < longitud; i++) {
-    //    if (szPalabraLeida[i] == ' ') {
-    //        for (j = 0; j < strlen(alfabeto); j++) {
-    //            szPalabraLeida[i + j] = alfabeto[j];
-    //        }
-    //        i += strlen(alfabeto) - 1;
-
-    //        // Almacenar la palabra modificada en szPalabrasSugeridas
-    //        strcpy(szPalabrasSugeridas[iNumSugeridas], szPalabraLeida);
-    //        iNumSugeridas++;
-    //    }
-    //}
 }
