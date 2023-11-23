@@ -172,30 +172,65 @@ void	ClonaPalabras(
     char	szPalabrasSugeridas[][TAMTOKEN], 	//Lista de palabras clonadas
     int& iNumSugeridas)						//Numero de elementos en la lista
 {
+    char alfabeto[] = "abcdefghijklmnopqrstuvwxyzáéíóú";
     int longitud = strlen(szPalabraLeida);
+    int i, j;
     iNumSugeridas = 0;
-    int i;
+    char palabraModificada[TAMTOKEN]; // Para almacenar la palabra modificada
 
     // Almacenar la palabra original en szPalabrasSugeridas
-    strcpy(szPalabrasSugeridas[iNumSugeridas], szPalabraLeida);
+    strcpy_s(szPalabrasSugeridas[iNumSugeridas],TAMTOKEN, szPalabraLeida);
     iNumSugeridas++;
 
-    for (i = 0; i < longitud; i++) {
-        char palabraModificada[TAMTOKEN];
+    for (i = 0; i < strlen(szPalabraLeida); i++) {
 
         // Eliminar el i-ésimo carácter de la palabra original
-        int pos = strchr(szPalabraLeida, 'a') - szPalabraLeida;
-
-        for (int j = 0; j < longitud - 1; j++) {
-            if (j != pos) {
-                palabraModificada[j] = szPalabraLeida[j];
+        for (j = 0; j < longitud; j++) {
+            if (j != i) {
+                palabraModificada[j - (j > i)] = szPalabraLeida[j];
             }
         }
+        palabraModificada[longitud - 1] = '\0'; // Agregar el terminador nulo al final de la nueva palabra
 
         // Copiar la palabra modificada a la matriz de palabras sugeridas
-        if (strlen(palabraModificada) < TAMTOKEN) {
-            strcpy(szPalabrasSugeridas[iNumSugeridas], palabraModificada);
+        strcpy_s(szPalabrasSugeridas[iNumSugeridas],TAMTOKEN, palabraModificada);
+        iNumSugeridas++;
+    }
+
+    strcpy_s(palabraModificada,TAMTOKEN, szPalabraLeida);
+    // Intercambia caracteres de par en par
+    for (int i = 0; i < longitud - 1; i++) {
+        char temp = palabraModificada[i];
+        palabraModificada[i] = palabraModificada[i + 1];
+        palabraModificada[i + 1] = temp;
+
+        strcpy_s(szPalabrasSugeridas[iNumSugeridas],TAMTOKEN, palabraModificada);
+        strcpy_s(palabraModificada,TAMTOKEN, szPalabraLeida);
+        iNumSugeridas++;
+    }
+
+    // Sustituir cada carácter de la cadena original por TODO el alfabeto
+    for (i = 0; i < longitud; i++) {
+        for (j = 0; j <= strlen(alfabeto); j++) {
+            szPalabraLeida[i] = alfabeto[j];
+
+            // Almacenar la palabra modificada en szPalabrasSugeridas
+            strcpy(szPalabrasSugeridas[iNumSugeridas], szPalabraLeida);
             iNumSugeridas++;
         }
     }
+
+    //// Insertar el alfabeto completo en cada uno de los espacios
+    //for (i = 0; i < longitud; i++) {
+    //    if (szPalabraLeida[i] == ' ') {
+    //        for (j = 0; j < strlen(alfabeto); j++) {
+    //            szPalabraLeida[i + j] = alfabeto[j];
+    //        }
+    //        i += strlen(alfabeto) - 1;
+
+    //        // Almacenar la palabra modificada en szPalabrasSugeridas
+    //        strcpy(szPalabrasSugeridas[iNumSugeridas], szPalabraLeida);
+    //        iNumSugeridas++;
+    //    }
+    //}
 }
